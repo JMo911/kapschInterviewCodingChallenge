@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<head>
+    <title>Flickr Image Grabber</title>
+    <!-- IMPORT JQUERY CDN -->
+    <script
+    src="https://code.jquery.com/jquery-3.4.1.js"
+    integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU="
+    crossorigin="anonymous"></script>
+    <!--IMPORT STYLE SHEETS-->
+    <link rel="stylesheet" type="text/css" href="./reset.css.css">
+    <link rel="stylesheet" type="text/css" href="./style.css">
+</head>
+
+<body>
+    <header>
+        <h1>Flickr Image Grabber</h1>
+        <h3>Jacob Moss</h3>
+    </header>
+    <!-- <div id='formDiv'> -->
+        <form>
+            <label for="userSearchTerm">Image Search:</label>
+            <input type='text' id='userSearchTerm' name='userSearchTerm'>
+            <input type="submit" value="Submit" id='submit'>
+        </form>
+    <!-- </div> -->
+
+    <div id='loadingState'></div>
+
+    <div id='thumbnailPics'></div>
+
+    <script type='text/javascript'>
+        //ADD TEXT TO A DIV WHILE AWAITING RESULTS FROM THE CALL TO LET THE USER KNOW WE'RE LOADING
+        $(document).on({
+            ajaxStart: function() { $('#loadingState').html("Grabbing your images...");    },
+            ajaxStop: function() { $('#loadingState').html(""); }    
+        });
+
+        //ADD CLICK EVENT TO GRAB IMAGES FOR USER WHEN THE SUBMIT BUTTON IS CLICKED
+        document.getElementById("submit").addEventListener("click", function(event){
+        event.preventDefault();
+        $('#thumbnailPics').empty();
+        let searchTerm = document.getElementById('userSearchTerm').value;
+        let apiURL = 'http://www.flickr.com/services/feeds/photos_public.gne?tags=' + searchTerm + '&format=json&jsoncallback=?';
+        //CALL OUT TO API FOR DATA
+        $.ajax({
+            url: apiURL,
+            context: document.body,
+            dataType: "jsonp"
+            }).done(function(data) {
+                data.items.forEach(element => {
+                    let puppyImg = $('<img id="dynamic">')
+                    puppyImg.attr('src', element.media.m)
+                    puppyImg.addClass('resultThumbnail')
+                    puppyImg.prependTo('#thumbnailPics')
+                });
+            });
+        });
+    </script>
+
+
+
+    <footer>
+        <h4> Images retrieved using the Flickr Public API</h4>
+        <h4>Designed for the Kapsch Interview Process</h4>
+        <h5>3.31.2020</h5>
+
+    </footer>
+
+</body>
+</html>
